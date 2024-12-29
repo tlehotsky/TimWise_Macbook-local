@@ -17,6 +17,9 @@ from datetime import datetime
 import datetime as dt
 from django.contrib.auth import logout as auth_logout
 from django.shortcuts import redirect
+from django.views.generic.edit import UpdateView
+
+
 
 class Author_list(ListView):
     model = Highlight
@@ -34,6 +37,18 @@ class UploadHighlights(CreateView):
     model = Highlight
     template_name = "upload_highlights.html"
     fields = ["chapter_number", "html_line_number", "color", "page_number","text"]
+
+class EditAuthorView(UpdateView):
+    model = Author
+    template_name = "edit_author.html"
+    fields = ["lastname", "firstname", "fullname"]  # Fields to edit
+    success_url = reverse_lazy("myauthors")  # Redirect after successful edit
+
+    def get_object(self, queryset=None):
+        # Get the specific author with ID 35
+        return Author.objects.get(ID=35)
+
+
 
 class FileUploadView(LoginRequiredMixin, CreateView):
     model = Files

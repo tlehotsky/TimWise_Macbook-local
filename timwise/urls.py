@@ -3,7 +3,8 @@
 
 
 from django.urls import path, include
-from .views import UploadHighlights, FileUploadView
+# TODO: test commenting out the next line
+from .views import UploadHighlights, FileUploadView, EditAuthorView
 from django.views.generic import TemplateView
 from django.http import HttpResponse
 import logging
@@ -21,11 +22,12 @@ def test_logging(request):
     return HttpResponse("Test view executed - check your console")
 
 urlpatterns = [
+    path('', views.home, name='home'),
     path('test-logging/', test_logging, name='test-logging'),
     path('upload/', FileUploadView.as_view(), name='upload'),
     path('success/<str:filename>/<str:msg>/', TemplateView.as_view(template_name='success.html'), name='success'),
-    path('', views.home, name='home'),
     path('home/', views.home, name='home'),
+    path('edit-author/', EditAuthorView.as_view(), name='edit-author'),
     path('myauthors/', views.myauthors, name='myauthors'),
     path('why/', views.why, name='why'),
     path('settings/', views.settings, name='settings'),
