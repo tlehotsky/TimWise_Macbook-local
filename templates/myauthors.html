@@ -1,4 +1,3 @@
-<!-- templates/editauthor.html -->
 {% extends "base.html" %}
 
 {% block content %}
@@ -14,12 +13,11 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 12px;  /* Adjust the font size for the entire table */
+            font-size: 12px;
         }
         th, td {
             border: 1px solid #ddd;
             padding: 8px;
-            font-size: 12px;  /* Adjust the font size for table headers and data */
         }
         th {
             background-color: #f4f4f4;
@@ -36,9 +34,8 @@
 <body>
     <h1>My Authors</h1>
     <br>
-    <p>Your username is {{  user_name }}, and your user ID is {{ user_id }}</p>
-    <br>
-    <p> You have {{ qty_of_authors}} Author in your database</p>
+    <p>Your username is {{ user_name }}, and your user ID is {{ user_id }}</p>
+    <p>You have {{ qty_of_authors }} Author(s) in your database</p>
     <table>
         <thead>
             <tr>
@@ -46,6 +43,7 @@
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>Date Loaded</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -55,16 +53,17 @@
                 <td>{{ author.firstname }}</td>
                 <td>{{ author.lastname }}</td>
                 <td>{{ author.dateloaded }}</td>
+                <td>
+                    <a href="{% url 'edit-author' id=author.ID %}">Edit</a>
+                </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="8" style="text-align: center;">No Authors found</td>
+                <td colspan="5" style="text-align: center;">No Authors found</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-    <br>
-    <a href="{% url 'edit-author' %}">Edit Author</a>
 </body>
 </html>
 {% endblock content %}

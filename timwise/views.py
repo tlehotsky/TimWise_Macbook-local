@@ -45,8 +45,8 @@ class EditAuthorView(UpdateView):
     success_url = reverse_lazy("myauthors")  # Redirect after successful edit
 
     def get_object(self, queryset=None):
-        # Get the specific author with ID 35
-        return Author.objects.get(ID=35)
+        author_id = self.kwargs.get("id")
+        return Author.objects.get(ID=author_id)
 
 
 

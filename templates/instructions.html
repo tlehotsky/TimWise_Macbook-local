@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 
-{% block title %}File Upload{% endblock %}
 
 {% block content %}
 
@@ -9,27 +8,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Success</title>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
-        th {
-            background-color: #f4f4f4;
-            text-align: left;
-        }
-    </style>
+    <title>Export Kindle Highlights</title>
 </head>
 <body>
-    <h1>Instructions for TimWise</h1>
+    <h1>First: Export Kindle Highlights to an HTML File</h1>
     <br>
-    <p> This is how you use TimWise.</p>
+    <h2>Option 1: Export Highlights Directly from the Kindle App</h2>
+    <ol>
+        <li><strong>Open the Kindle App:</strong> Launch the Kindle app on your device.</li>
+        <li><strong>Select the Book:</strong> Open the book with the highlights you want to export.</li>
+        <li>
+            <strong>View Notes & Highlights:</strong>
+            <ul>
+                <li>Tap on the screen to reveal the menu.</li>
+                <li>Tap the <em>Notebook</em> icon or select <em>Go to Notebook</em> (depending on your device).</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Export Notes:</strong>
+            <ul>
+                <li>In the Notebook view, tap the <em>Share</em> or <em>Export Notes</em> button.</li>
+                <li>Choose the export format (e.g., email).</li>
+                <li>Email the notes to yourself or save them locally.</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Save as HTML:</strong>
+            <ul>
+                <li>If the notes are sent as a file, save or open the file and convert it to <code>.html</code> using a text editor.</li>
+                <li>If emailed as plain text, copy the content, paste it into an HTML editor or word processor, and save it as a <code>.html</code> file.</li>
+            </ul>
+        </li>
+    </ol>
+
+    <h2>Option 2: Export Highlights via Kindle Website</h2>
+    <ol>
+        <li>
+            <strong>Access Your Kindle Highlights Online:</strong>
+            <ul>
+                <li>Visit <a href="https://read.amazon.com/notebook" target="_blank">Amazon's Kindle Notes & Highlights page</a>.</li>
+                <li>Sign in to your Amazon account if prompted.</li>
+            </ul>
+        </li>
+        <li><strong>View Your Highlights:</strong> Select the book you want to extract highlights from. All your highlights for that book will appear.</li>
+        <li><strong>Copy Highlights:</strong> Manually copy the highlights or use a browser extension to automate the process.</li>
+        <li>
+            <strong>Save as HTML:</strong>
+            <ul>
+                <li>Paste the copied highlights into an HTML editor or word processor and save them as a <code>.html</code> file.</li>
+            </ul>
+        </li>
+    </ol>
+    <br>
+    <h1>Upload the HTML File to TimWise</h1>
+    <br>
+    <h2>Using your browser and the TimWise website</h2>
+    <ol>
+        <li>go to the file upload page, you can access it by clicking <a href="{% url 'upload' %}">here</a></li>
+        <li>Select the html file that you downloaded  above</li>
+        <li>click upload</li>
+    </ol>
+
+
+
+
+
+
 </body>
 </html>
+
 
 {% endblock %}

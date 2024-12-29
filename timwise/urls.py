@@ -27,7 +27,7 @@ urlpatterns = [
     path('upload/', FileUploadView.as_view(), name='upload'),
     path('success/<str:filename>/<str:msg>/', TemplateView.as_view(template_name='success.html'), name='success'),
     path('home/', views.home, name='home'),
-    path('edit-author/', EditAuthorView.as_view(), name='edit-author'),
+    path('edit-author/<int:id>/', EditAuthorView.as_view(), name='edit-author'),
     path('myauthors/', views.myauthors, name='myauthors'),
     path('why/', views.why, name='why'),
     path('settings/', views.settings, name='settings'),

@@ -1,81 +1,10 @@
-for my django Timwise app please create a generic class base view to return a html page that allows a user to edit the author stored inside the Author model where the ID is 35
-    
-    this is my model.py file:
+using the edit_author.html file you just help me build, i would like to modify myauthors.html to include a link in each row of the table to allow the user to edit that author using the edit_authorEditAuthorView class bass view you just helped me build.__build_class__
 
-# timwise django app
+this is my timwise.views.py
+
 # timwise.views.py
-
-
-
-from django.db import models
-from django.core.validators import MaxValueValidator, MinValueValidator
-from django.contrib.auth.models import User
-from django.utils.timezone import now
-# from django.contrib.auth import get_user_model
-
-# User = get_user_model()
-
-class Author(models.Model):  
-    ID = models.AutoField(primary_key=True, verbose_name="author ID")
-    lastname = models.CharField(max_length=30,verbose_name="author last name")
-    firstname = models.CharField(max_length=30, verbose_name="author first name")
-    fullname = models.CharField(max_length=60, unique=True, verbose_name="author full name")
-    dateloaded=models.CharField(max_length=12)
-    sessionkey = models.CharField(max_length=50, verbose_name="django session key")
-    timestamp=models.DateTimeField(auto_now_add=True)
-    user=models.ForeignKey(User, on_delete=models.CASCADE)
-
-
-
-    def __str__(self):
-        return self.fullname
-
-class Book(models.Model): 
-    timestamp=models.DateTimeField(auto_now_add=True)
-    sessionkey = models.CharField(max_length=50, verbose_name="django session key")
-    ID = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=200)
-    author = models.ForeignKey('Author', on_delete=models.CASCADE, verbose_name="book author")
-    chaptercount = models.IntegerField(verbose_name="chapter count")
-    dateloaded=models.CharField(max_length=12)
-    user=models.ForeignKey(User, on_delete=models.CASCADE)
-    yearwritten = models.IntegerField(
-        validators=[MinValueValidator(1900), MaxValueValidator(9999)], verbose_name="year written"
-    )
-
-    class Meta:
-        unique_together = ['name', 'author']  # Add this to prevent duplicate books by same author
-
-    def __str__(self):
-        return f"{self.name} by {self.author}"
-
-
-class Highlight(models.Model):  
-    ID = models.AutoField(primary_key=True, verbose_name="highlight ID")
-    book = models.ForeignKey('Book', on_delete=models.CASCADE)
-    chapter_number = models.CharField(max_length=50)
-    html_line_number = models.IntegerField(verbose_name="highlight html line number")
-    color = models.CharField(max_length=30, verbose_name="highlight color")
-    page_number = models.CharField(max_length=50, verbose_name="highlight page number")
-    text = models.TextField(verbose_name="highlight text")
-    sessionkey = models.CharField(max_length=50, verbose_name="django session key")
-    user=models.ForeignKey(User, on_delete=models.CASCADE)
-    timestamp=models.DateTimeField(auto_now_add=True)
-    dateloaded=models.CharField(max_length=12, verbose_name="date")
-
-class Files(models.Model):
-    file=models.FileField(verbose_name="files")
-    uploaded_at = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return str(self.file)
-
-######
-this is timwise.views.py file:
-
-# timwise.views django app
-#   # cd /home/django/django_project
+# # cd /home/django/django_project
+# source bin/activate
 from django.shortcuts import render, redirect
 from .models import Book, Author, Highlight, Files
 from django.views.generic import ListView, CreateView
@@ -92,6 +21,9 @@ from datetime import datetime
 import datetime as dt
 from django.contrib.auth import logout as auth_logout
 from django.shortcuts import redirect
+from django.views.generic.edit import UpdateView
+
+
 
 class Author_list(ListView):
     model = Highlight
@@ -110,6 +42,16 @@ class UploadHighlights(CreateView):
     template_name = "upload_highlights.html"
     fields = ["chapter_number", "html_line_number", "color", "page_number","text"]
 
+class EditAuthorView(UpdateView):
+    model = Author
+    template_name = "edit_author.html"
+    fields = ["lastname", "firstname", "fullname"]  # Fields to edit
+    success_url = reverse_lazy("myauthors")  # Redirect after successful edit
+
+    def get_object(self, queryset=None):
+        # Get the specific author with ID 35
+        return Author.objects.get(ID=35)
+
 
 
 class FileUploadView(LoginRequiredMixin, CreateView):
@@ -117,7 +59,6 @@ class FileUploadView(LoginRequiredMixin, CreateView):
     form_class = FileUploadForm
     template_name = 'upload.html'
     success_url = reverse_lazy('success')
-
 
     def dispatch(self, request, *args, **kwargs):
         print(f"DEBUG: Request method: {request.method}")
@@ -222,6 +163,7 @@ class FileUploadView(LoginRequiredMixin, CreateView):
             book_obj = Book.objects.filter(name=book_name).first()
             msg=msg+".......CHECKED....."
  
+
             try:
 
                 book_obj, created = Book.objects.get_or_create(
@@ -240,10 +182,6 @@ class FileUploadView(LoginRequiredMixin, CreateView):
                 msg=msg+f"Failed to create book, the resulting error message is: {e}"
 
             msg=msg+"...... BOOK ENTRY CREATED....."
-
-            # else:
-            #     msg=msg+"  7.  .......BOOK EXISTS, DOING NOTHING...."
- 
              
             msg=msg+"  8.  .......BOOK DATABASE UPDATE PROCEDURE PASSED...."
             
@@ -300,8 +238,6 @@ class FileUploadView(LoginRequiredMixin, CreateView):
                     except Exception as e:
                         if z==1:
                             msg=msg+f"Failed to READ highlight, the resulting error message is: {e}"  
-
-
                     try:
 
 
@@ -319,7 +255,6 @@ class FileUploadView(LoginRequiredMixin, CreateView):
                             }
                         )                           
 
-
                         if not highlight_obj: #highlight does not exist
                             
                             highlight_upload_count=highlight_upload_count+1
@@ -333,8 +268,6 @@ class FileUploadView(LoginRequiredMixin, CreateView):
                         msg=msg+f"Failed to WRITE highlight, the resulting error message is: {errortext}"                            
 
                     z=z+1
-
-
 
             try:
                 uploadstatmessage=" " 
@@ -456,14 +389,14 @@ def myauthors(request):
 
     return render(request, 'myauthors.html', context)
 
-this is my urls.py file:
-
+this is my timwise.urls.py file:
 # timwise django app
 # timwise.urls.py
 
 
 from django.urls import path, include
-from .views import UploadHighlights, FileUploadView
+# TODO: test commenting out the next line
+from .views import UploadHighlights, FileUploadView, EditAuthorView
 from django.views.generic import TemplateView
 from django.http import HttpResponse
 import logging
@@ -481,11 +414,12 @@ def test_logging(request):
     return HttpResponse("Test view executed - check your console")
 
 urlpatterns = [
+    path('', views.home, name='home'),
     path('test-logging/', test_logging, name='test-logging'),
     path('upload/', FileUploadView.as_view(), name='upload'),
     path('success/<str:filename>/<str:msg>/', TemplateView.as_view(template_name='success.html'), name='success'),
-    path('', views.home, name='home'),
     path('home/', views.home, name='home'),
+    path('edit-author/', EditAuthorView.as_view(), name='edit-author'),
     path('myauthors/', views.myauthors, name='myauthors'),
     path('why/', views.why, name='why'),
     path('settings/', views.settings, name='settings'),
@@ -501,4 +435,91 @@ if settings.DEBUG:
     urlpatterns = [
         path('__debug__/', include(debug_toolbar.urls)),
     ] + urlpatterns
+
+this is myauthors.html file:
+
+<!-- templates/editauthor.html -->
+{% extends "base.html" %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Authors</title>
+    <br>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;  /* Adjust the font size for the entire table */
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            font-size: 12px;  /* Adjust the font size for table headers and data */
+        }
+        th {
+            background-color: #f4f4f4;
+            text-align: left;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+    <h1>My Authors</h1>
+    <br>
+    <p>Your username is {{  user_name }}, and your user ID is {{ user_id }}</p>
+    <br>
+    <p> You have {{ qty_of_authors}} Author in your database</p>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Date Loaded</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for author in authors %}
+            <tr>
+                <td>{{ author.ID }}</td>
+                <td>{{ author.firstname }}</td>
+                <td>{{ author.lastname }}</td>
+                <td>{{ author.dateloaded }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8" style="text-align: center;">No Authors found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br>
+    <a href="{% url 'edit-author' %}">Edit Author</a>
+</body>
+</html>
+{% endblock content %}
+
+this is my edit_author.html
+
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Edit Author</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save Changes</button>
+</form>
+<a href="{% url 'myauthors' %}">Cancel</a>
+{% endblock %}
 
