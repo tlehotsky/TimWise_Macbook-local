@@ -1,0 +1,17 @@
+/* Align labels and inputs */
+.form-row {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 15px; /* Add spacing between rows */
+}
+
+.form-row label {
+    margin-right: 10px; /* Space between label and input */
+    flex-shrink: 0; /* Prevent label from resizing */
+}
+
+textarea.custom-textarea {
+    width: 400px; /* Width of the textarea */
+    height: 100px; /* Height of the textarea */
+    resize: none; /* Prevent manual resizing */
+}

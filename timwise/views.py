@@ -1,6 +1,7 @@
 # timwise.views.py
 # # cd /home/django/django_project
 # source bin/activate
+from django import forms
 from django.shortcuts import render, redirect
 from .models import Book, Author, Highlight, Files
 from django.views.generic import ListView, CreateView
@@ -47,6 +48,33 @@ class EditAuthorView(UpdateView):
     def get_object(self, queryset=None):
         author_id = self.kwargs.get("id")
         return Author.objects.get(ID=author_id)
+
+
+
+class EditBookForm(forms.ModelForm):
+    class Meta:
+        model = Book
+        fields = ["name", "yearwritten"]
+        widgets = {
+            "name": forms.Textarea(attrs={
+            "class": "custom-textarea",
+            "wrap": "soft",
+         }),
+}
+
+
+
+class EditBookView(UpdateView):
+    model = Book
+    template_name = "edit_book.html"
+    form_class = EditBookForm
+    # fields = ["name", "yearwritten"]  # Fields to edit
+    success_url = reverse_lazy("mybooks")  # Redirect after successful edit
+
+    def get_object(self, queryset=None):
+        book_id = self.kwargs.get("id")
+        return Book.objects.get(ID=book_id)
+
 
 
 
@@ -385,3 +413,28 @@ def myauthors(request):
 
     return render(request, 'myauthors.html', context)
 
+
+
+def mybooks(request):
+    # Ensure the user is authenticated
+    if not request.user.is_authenticated:
+        return render(request, 'error.html', {'message': 'You need to log in to view your highlights.'})
+
+    user_id = request.user.id
+    user_name = request.user.username
+    session_id = request.session.session_key
+    
+    # Filter highlights for the logged-in user
+    books = Book.objects.filter(user_id=user_id)
+    qty_of_books = len(books)
+
+    context = {
+        'user_id': user_id,
+        'user_name': user_name,
+        'session_id': session_id,
+        'books': books,
+        'qty_of_books': qty_of_books,
+    }
+
+
+    return render(request, 'mybooks.html', context)

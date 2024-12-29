@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% load static %}
+<h1>Edit Book</h1>
+<form method="post">
+    {% csrf_token %}
+    <div class="form-row">
+        {{ form.name.label_tag }}
+        {{ form.name }}
+    </div>
+    <div class="form-row">
+        {{ form.yearwritten.label_tag }}
+        {{ form.yearwritten }}
+    </div>
+    <button type="submit">Save Changes</button>
+</form>
+<a href="{% url 'mybooks' %}">Cancel</a>
+{% endblock %}

@@ -4,7 +4,7 @@
 
 from django.urls import path, include
 # TODO: test commenting out the next line
-from .views import UploadHighlights, FileUploadView, EditAuthorView
+from .views import UploadHighlights, FileUploadView, EditAuthorView, EditBookView
 from django.views.generic import TemplateView
 from django.http import HttpResponse
 import logging
@@ -28,6 +28,8 @@ urlpatterns = [
     path('success/<str:filename>/<str:msg>/', TemplateView.as_view(template_name='success.html'), name='success'),
     path('home/', views.home, name='home'),
     path('edit-author/<int:id>/', EditAuthorView.as_view(), name='edit-author'),
+    path('edit-book/<int:id>/', EditBookView.as_view(), name='edit-book'),
+    path('mybooks/', views.mybooks, name='mybooks'),
     path('myauthors/', views.myauthors, name='myauthors'),
     path('why/', views.why, name='why'),
     path('settings/', views.settings, name='settings'),
