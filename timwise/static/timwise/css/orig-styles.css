@@ -1,0 +1,15 @@
+.form-row {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 10px; /* Add spacing between rows */
+}
+
+.form-row label {
+    margin-right: 10px; /* Space between label and field */
+    flex-shrink: 0; /* Prevent the label from shrinking */
+}
+
+textarea.custom-textarea {
+    width: 400px;
+    height: 100px;
+}

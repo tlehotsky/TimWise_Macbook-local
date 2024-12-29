@@ -11,7 +11,12 @@
 }
 
 textarea.custom-textarea {
-    width: 400px; /* Width of the textarea */
-    height: 100px; /* Height of the textarea */
+    width: 600px; /* Width of the textarea */
+    height: 80px; /* Height of the textarea */
     resize: none; /* Prevent manual resizing */
+}
+
+
+body {
+    background-color: lightblue;
 }
