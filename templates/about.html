@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}File Upload{% endblock %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Success</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f4f4f4;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>About TimWise</h1>
+    <br>
+    <p> The is an application I built using django with lots of help from ChatGPT, Gemini, and Claude.  TimWise is  service that sends customers a daily highlight from an ebook they’ve previous read and highlighted.  It  offers a simple yet powerful way to reinforce knowledge and inspiration. By revisiting passages they found meaningful, readers can deepen their understanding of key concepts, rekindle emotional connections to the text, and better retain important ideas over time. This regular engagement transforms a one-time reading experience into an ongoing journey of learning and reflection, making the highlights feel more integrated into their daily lives. It’s particularly useful for professionals, students, or avid readers who want to internalize insights from books but struggle to revisit them in the midst of busy schedules.</p>
+
+<p>Additionally, the service enhances personalization and fosters stronger user relationships by tailoring content delivery to their preferences and past choices. Receiving curated highlights adds a layer of delight, as it serves as a small, daily reminder of personal growth, intellectual curiosity, or emotional resonance. Over time, these micro-moments of engagement help build lasting value and increase satisfaction with the reading experience. By bridging the gap between consumption and reflection, the service not only empowers readers to retain and act on the wisdom from their books but also keeps them motivated to explore more content.  </p>
+</body>
+</html>
+
+{% endblock %}

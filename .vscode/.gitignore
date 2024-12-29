@@ -1,0 +1,24 @@
+#mac specifi
+*.DS_Store
+
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django stuff:
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+*.db
+
+# If you are using Django migrations
+*/migrations/*
+
+
+
+

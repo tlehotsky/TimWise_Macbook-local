@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}File Upload{% endblock %}
+
+{% block content %}
+
+
+
+
+
+<h1>The File Uploaded Successfully!</h1>
+<p>Filename: {{ filename|linebreaksbr }}</p>
+<p>The response from checking the file: {{ msg }} </p>
+{% endblock %}
