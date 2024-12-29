@@ -1,10 +1,4 @@
-
-# ### ffffffffffffffffff
-
 #   # cd /home/django/django_project
-
-# # postgreSQL token dop_v1_e24493e7dc51ea5043a81eb680ed951b10902eea794edf80b54fb40cbbc1119a
-
 from django.shortcuts import render, redirect
 from .models import Book, Author, Highlight, Files
 from django.views.generic import ListView, CreateView
@@ -71,6 +65,7 @@ class FileUploadView(LoginRequiredMixin, CreateView):
 
     # @timeout(30)
     def form_valid(self, form):
+        # TODO: cleanup form_valid
         highlight_upload_count=0
         highlight_NOT_upload_count=0
         msg="   1. DEBUG: Starting form_valid method."
@@ -110,6 +105,7 @@ class FileUploadView(LoginRequiredMixin, CreateView):
 
             except:
                 year = 9999
+
             msg=msg + f"  4.    The year is: {year}"
 
             author=soup.find(class_ = "authors")
@@ -120,15 +116,22 @@ class FileUploadView(LoginRequiredMixin, CreateView):
             author_last_name=author_name.split(',')[0]
             author_first_name=author_name.split(', ')[1]
 
-            author_obj, created = Author.objects.get_or_create(
-                fullname=f"{author_first_name} {author_last_name}",
-                user=user_obj,
-                defaults={
-                    'firstname': author_first_name,
-                    'lastname': author_last_name,
-                    'dateloaded':datewhenuploaded,
-                    'sessionkey':session_id,                }
-            )
+            try:
+
+                user_obj = User.objects.filter(id=user_id).first()
+
+                author_obj, created = Author.objects.get_or_create(
+                    fullname=f"{author_first_name} {author_last_name}",
+                    user=user_obj,
+                    defaults={
+                        'firstname': author_first_name,
+                        'lastname': author_last_name,
+                        'dateloaded':datewhenuploaded,
+                        'sessionkey':session_id,                }
+                    )
+
+            except Exception as e:
+                msg=msg+f"Failed to create author, the resulting error message is: {e}"
 
 
             authorid=author_obj.ID 
@@ -143,28 +146,54 @@ class FileUploadView(LoginRequiredMixin, CreateView):
 
             book_obj = Book.objects.filter(name=book_name).first()
             msg=msg+".......CHECKED....."
+ 
+ 
+ 
+ ############ author object ############
+                # author_obj, created = Author.objects.get_or_create(
+                #     fullname=f"{author_first_name} {author_last_name}",
+                #     user=user_obj,
+                #     defaults={
+                #         'firstname': author_first_name,
+                #         'lastname': author_last_name,
+                #         'dateloaded':datewhenuploaded,
+                #         'sessionkey':session_id,                }
+                #     )
 
 
+            try:
 
-            if not book_obj:
-                msg=msg+f".......BOOK DOES NOT EXIST....CREATING NEW...."
+                book_obj, created = Book.objects.get_or_create(
+                    name=book_name,
+                    author=author_obj,
+                    user=user_obj,
+                    defaults={
+                        'chaptercount': chapter_quantity,
+                        'yearwritten': year,
+                        'dateloaded': datewhenuploaded,
+                        'sessionkey': session_id,
+                    }
+                )
 
-                try:
-                    book_obj = Book.objects.create(
-                        name=book_name,
-                        author=author_obj,
-                        chaptercount=chapter_quantity,
-                        yearwritten=year,
-                        dateloaded=datewhenuploaded,
-                        sessionkey=session_id,
-                    )
-                except Exception as e:
-                    msg=msg+f"Failed to create book, the resulting error message is: {e}"
+            # if not book_obj:
+            #     msg=msg+f".......BOOK DOES NOT EXIST....CREATING NEW...."
 
-                msg=msg+"...... BOOK ENTRY CREATED....."
+            #     try:
+            #         book_obj = Book.objects.create(
+            #             name=book_name,
+            #             author=author_obj,
+            #             chaptercount=chapter_quantity,
+            #             yearwritten=year,
+            #             dateloaded=datewhenuploaded,
+            #             sessionkey=session_id,
+            #         )
+            except Exception as e:
+                msg=msg+f"Failed to create book, the resulting error message is: {e}"
 
-            else:
-                msg=msg+"  7.  .......BOOK EXISTS, DOING NOTHING...."
+            msg=msg+"...... BOOK ENTRY CREATED....."
+
+            # else:
+            #     msg=msg+"  7.  .......BOOK EXISTS, DOING NOTHING...."
  
              
             msg=msg+"  8.  .......BOOK DATABASE UPDATE PROCEDURE PASSED...."
@@ -228,7 +257,6 @@ class FileUploadView(LoginRequiredMixin, CreateView):
 
                     try:
 
-                        user_obj = User.objects.filter(id=user_id).first()
 
                         highlight_obj, created = Highlight.objects.get_or_create(
                             text=text,
