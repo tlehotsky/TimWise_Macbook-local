@@ -1,6 +1,81 @@
+for my django Timwise app please create a generic class base view to return a html page that allows a user to edit the author stored inside the Author model where the ID is 35
+    
+    this is my model.py file:
+
+# timwise django app
 # timwise.views.py
-# # cd /home/django/django_project
-# source bin/activate
+
+
+
+from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.contrib.auth.models import User
+from django.utils.timezone import now
+# from django.contrib.auth import get_user_model
+
+# User = get_user_model()
+
+class Author(models.Model):  
+    ID = models.AutoField(primary_key=True, verbose_name="author ID")
+    lastname = models.CharField(max_length=30,verbose_name="author last name")
+    firstname = models.CharField(max_length=30, verbose_name="author first name")
+    fullname = models.CharField(max_length=60, unique=True, verbose_name="author full name")
+    dateloaded=models.CharField(max_length=12)
+    sessionkey = models.CharField(max_length=50, verbose_name="django session key")
+    timestamp=models.DateTimeField(auto_now_add=True)
+    user=models.ForeignKey(User, on_delete=models.CASCADE)
+
+
+
+    def __str__(self):
+        return self.fullname
+
+class Book(models.Model): 
+    timestamp=models.DateTimeField(auto_now_add=True)
+    sessionkey = models.CharField(max_length=50, verbose_name="django session key")
+    ID = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=200)
+    author = models.ForeignKey('Author', on_delete=models.CASCADE, verbose_name="book author")
+    chaptercount = models.IntegerField(verbose_name="chapter count")
+    dateloaded=models.CharField(max_length=12)
+    user=models.ForeignKey(User, on_delete=models.CASCADE)
+    yearwritten = models.IntegerField(
+        validators=[MinValueValidator(1900), MaxValueValidator(9999)], verbose_name="year written"
+    )
+
+    class Meta:
+        unique_together = ['name', 'author']  # Add this to prevent duplicate books by same author
+
+    def __str__(self):
+        return f"{self.name} by {self.author}"
+
+
+class Highlight(models.Model):  
+    ID = models.AutoField(primary_key=True, verbose_name="highlight ID")
+    book = models.ForeignKey('Book', on_delete=models.CASCADE)
+    chapter_number = models.CharField(max_length=50)
+    html_line_number = models.IntegerField(verbose_name="highlight html line number")
+    color = models.CharField(max_length=30, verbose_name="highlight color")
+    page_number = models.CharField(max_length=50, verbose_name="highlight page number")
+    text = models.TextField(verbose_name="highlight text")
+    sessionkey = models.CharField(max_length=50, verbose_name="django session key")
+    user=models.ForeignKey(User, on_delete=models.CASCADE)
+    timestamp=models.DateTimeField(auto_now_add=True)
+    dateloaded=models.CharField(max_length=12, verbose_name="date")
+
+class Files(models.Model):
+    file=models.FileField(verbose_name="files")
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.file)
+
+######
+this is timwise.views.py file:
+
+# timwise.views django app
+#   # cd /home/django/django_project
 from django.shortcuts import render, redirect
 from .models import Book, Author, Highlight, Files
 from django.views.generic import ListView, CreateView
@@ -35,11 +110,14 @@ class UploadHighlights(CreateView):
     template_name = "upload_highlights.html"
     fields = ["chapter_number", "html_line_number", "color", "page_number","text"]
 
+
+
 class FileUploadView(LoginRequiredMixin, CreateView):
     model = Files
     form_class = FileUploadForm
     template_name = 'upload.html'
     success_url = reverse_lazy('success')
+
 
     def dispatch(self, request, *args, **kwargs):
         print(f"DEBUG: Request method: {request.method}")
@@ -144,7 +222,6 @@ class FileUploadView(LoginRequiredMixin, CreateView):
             book_obj = Book.objects.filter(name=book_name).first()
             msg=msg+".......CHECKED....."
  
-
             try:
 
                 book_obj, created = Book.objects.get_or_create(
@@ -163,6 +240,10 @@ class FileUploadView(LoginRequiredMixin, CreateView):
                 msg=msg+f"Failed to create book, the resulting error message is: {e}"
 
             msg=msg+"...... BOOK ENTRY CREATED....."
+
+            # else:
+            #     msg=msg+"  7.  .......BOOK EXISTS, DOING NOTHING...."
+ 
              
             msg=msg+"  8.  .......BOOK DATABASE UPDATE PROCEDURE PASSED...."
             
@@ -219,6 +300,8 @@ class FileUploadView(LoginRequiredMixin, CreateView):
                     except Exception as e:
                         if z==1:
                             msg=msg+f"Failed to READ highlight, the resulting error message is: {e}"  
+
+
                     try:
 
 
@@ -236,6 +319,7 @@ class FileUploadView(LoginRequiredMixin, CreateView):
                             }
                         )                           
 
+
                         if not highlight_obj: #highlight does not exist
                             
                             highlight_upload_count=highlight_upload_count+1
@@ -249,6 +333,8 @@ class FileUploadView(LoginRequiredMixin, CreateView):
                         msg=msg+f"Failed to WRITE highlight, the resulting error message is: {errortext}"                            
 
                     z=z+1
+
+
 
             try:
                 uploadstatmessage=" " 
@@ -369,4 +455,50 @@ def myauthors(request):
 
 
     return render(request, 'myauthors.html', context)
+
+this is my urls.py file:
+
+# timwise django app
+# timwise.urls.py
+
+
+from django.urls import path, include
+from .views import UploadHighlights, FileUploadView
+from django.views.generic import TemplateView
+from django.http import HttpResponse
+import logging
+from django.conf import settings 
+from . import views  # new from AI, Import the views module from the current app
+
+logger = logging.getLogger(__name__)
+
+def test_logging(request):
+    print("PRINT: Test view executed")
+    logger.debug("DEBUG: Test view executed")
+    logger.info("INFO: Test view executed")
+    logger.warning("WARNING: Test view executed")
+    logger.error("ERROR: Test view executed")
+    return HttpResponse("Test view executed - check your console")
+
+urlpatterns = [
+    path('test-logging/', test_logging, name='test-logging'),
+    path('upload/', FileUploadView.as_view(), name='upload'),
+    path('success/<str:filename>/<str:msg>/', TemplateView.as_view(template_name='success.html'), name='success'),
+    path('', views.home, name='home'),
+    path('home/', views.home, name='home'),
+    path('myauthors/', views.myauthors, name='myauthors'),
+    path('why/', views.why, name='why'),
+    path('settings/', views.settings, name='settings'),
+    path('myhighlights/', views.myhighlights, name='myhighlights'),
+    path('logout/', views.logout, name='logout'),
+    path('signup/', views.signup, name='signup'),
+    path('instructions/', views.instructions, name='instructions'),
+    path('accounts/', include('django.contrib.auth.urls')),
+]
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns = [
+        path('__debug__/', include(debug_toolbar.urls)),
+    ] + urlpatterns
 

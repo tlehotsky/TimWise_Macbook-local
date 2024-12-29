@@ -1,15 +1,11 @@
 # timwise django app
-# views.py
-
-
-
+# timwise.models.py
+# 
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth.models import User
 from django.utils.timezone import now
-# from django.contrib.auth import get_user_model
 
-# User = get_user_model()
 
 class Author(models.Model):  
     ID = models.AutoField(primary_key=True, verbose_name="author ID")
@@ -20,7 +16,6 @@ class Author(models.Model):
     sessionkey = models.CharField(max_length=50, verbose_name="django session key")
     timestamp=models.DateTimeField(auto_now_add=True)
     user=models.ForeignKey(User, on_delete=models.CASCADE)
-
 
 
     def __str__(self):
@@ -66,9 +61,3 @@ class Files(models.Model):
 
     def __str__(self):
         return str(self.file)
-
-
-
-
-
-

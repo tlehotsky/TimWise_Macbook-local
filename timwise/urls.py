@@ -1,10 +1,5 @@
 # timwise django app
 # timwise.urls.py
-# Git update
-# more git updates
-# even more git updates
-
-#latest git test
 
 
 from django.urls import path, include
@@ -31,6 +26,7 @@ urlpatterns = [
     path('success/<str:filename>/<str:msg>/', TemplateView.as_view(template_name='success.html'), name='success'),
     path('', views.home, name='home'),
     path('home/', views.home, name='home'),
+    path('myauthors/', views.myauthors, name='myauthors'),
     path('why/', views.why, name='why'),
     path('settings/', views.settings, name='settings'),
     path('myhighlights/', views.myhighlights, name='myhighlights'),
