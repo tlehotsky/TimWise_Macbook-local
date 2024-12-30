@@ -1,6 +1,7 @@
 <!-- timwise django app
 templates.myhighlights.html -->
 
+
 {% extends 'base.html' %}
 
 {% block title %}My Highlights{% endblock %}
@@ -17,12 +18,12 @@ templates.myhighlights.html -->
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 12px; /* Adjust the font size for the entire table */
+            font-size: 12px;  /* Adjust the font size for the entire table */
         }
         th, td {
             border: 1px solid #ddd;
             padding: 8px;
-            font-size: 12px; /* Adjust the font size for table headers and data */
+            font-size: 12px;  /* Adjust the font size for table headers and data */
         }
         th {
             background-color: #f4f4f4;
@@ -50,7 +51,6 @@ templates.myhighlights.html -->
                 <th>Color</th>
                 <th>Text</th>
                 <th>Timestamp</th>
-                <th>Action</th> <!-- New Action Column -->
             </tr>
         </thead>
         <tbody>
@@ -64,13 +64,10 @@ templates.myhighlights.html -->
                 <td>{{ highlight.color }}</td>
                 <td>{{ highlight.text }}</td>
                 <td>{{ highlight.timestamp }}</td>
-                <td>
-                    <a href="{% url 'edit_highlight' highlight.ID %}">Edit</a> <!-- Action Link -->
-                </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="9" style="text-align: center;">No highlights found</td>
+                <td colspan="8" style="text-align: center;">No highlights found</td>
             </tr>
             {% endfor %}
         </tbody>

@@ -3,7 +3,7 @@
 # 
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AbstractUser
 from django.utils.timezone import now
 
 
@@ -61,3 +61,12 @@ class Files(models.Model):
 
     def __str__(self):
         return str(self.file)
+    
+# class CustomUser(AbstractUser):
+#     email = models.EmailField(unique=True)
+
+#     USERNAME_FIELD = 'email'
+#     REQUIRED_FIELDS = ['username']  # Add any other required fields here
+
+#     def __str__(self):
+#         return self.email

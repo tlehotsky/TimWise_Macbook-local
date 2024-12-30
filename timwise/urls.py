@@ -4,7 +4,7 @@
 
 from django.urls import path, include
 # TODO: test commenting out the next line
-from .views import UploadHighlights, FileUploadView, EditAuthorView, EditBookView
+from .views import UploadHighlights, FileUploadView, EditAuthorView, EditBookView, EditHighlightView
 from django.views.generic import TemplateView
 from django.http import HttpResponse
 import logging
@@ -38,6 +38,8 @@ urlpatterns = [
     path('signup/', views.signup, name='signup'),
     path('instructions/', views.instructions, name='instructions'),
     path('accounts/', include('django.contrib.auth.urls')),
+    # path('edit_highlight/<int:pk>/', views.edit_highlight, name='edit_highlight'),
+    path('edit_highlight/<int:pk>/', EditHighlightView.as_view(), name='edit_highlight'),
 ]
 
 if settings.DEBUG:

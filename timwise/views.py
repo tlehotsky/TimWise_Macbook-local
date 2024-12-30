@@ -49,8 +49,6 @@ class EditAuthorView(UpdateView):
         author_id = self.kwargs.get("id")
         return Author.objects.get(ID=author_id)
 
-
-
 class EditBookForm(forms.ModelForm):
     class Meta:
         model = Book
@@ -61,8 +59,6 @@ class EditBookForm(forms.ModelForm):
             "wrap": "soft",
          }),
 }
-
-
 
 class EditBookView(UpdateView):
     model = Book
@@ -75,8 +71,16 @@ class EditBookView(UpdateView):
         book_id = self.kwargs.get("id")
         return Book.objects.get(ID=book_id)
 
+########################### edit highlight classes ########################################
+
+class EditHighlightView(UpdateView):
+    model = Highlight
+    template_name = "edit_highlight.html"
+    fields = ["name", "html_line_number", "color", "page_number", "text"]  # Fields to edit
+    success_url = reverse_lazy("myhighlights")  # Redirect after successful edit
 
 
+########################### edit highlight classes ########################################
 
 class FileUploadView(LoginRequiredMixin, CreateView):
     model = Files
@@ -438,3 +442,7 @@ def mybooks(request):
 
 
     return render(request, 'mybooks.html', context)
+
+# def edit_highlight(request, pk):
+#     # Your view logic here
+#     return render(request, 'edit_highlight.html', context={})
