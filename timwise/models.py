@@ -7,6 +7,27 @@ from django.contrib.auth.models import User, AbstractUser
 from django.utils.timezone import now
 
 
+class UserSettings(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    theme = models.CharField(max_length=50, verbose_name="Theme")
+    font_size = models.IntegerField(verbose_name="Font Size")
+    font_family = models.CharField(max_length=50, verbose_name="Font Family")
+    line_height = models.FloatField(verbose_name="Line Height")
+    margin = models.FloatField(verbose_name="Margin")
+    emailfrequency = models.CharField(max_length=50, verbose_name="Email Frequency")
+    qtyperemail = models.IntegerField(verbose_name="Number of Highlights per email")
+    repeatsendhightlights = models.BooleanField(verbose_name="Repeat Send Highlights")
+    
+
+    # session_key = models.CharField(max_length=50, verbose_name="Django Session Key")
+    # timestamp = models.DateTimeField(auto_now_add=True)
+    # date_loaded = models.CharField(max_length=12)
+
+    def __str__(self):
+        return self.user.username
+
+
+
 class Author(models.Model):  
     ID = models.AutoField(primary_key=True, verbose_name="author ID")
     lastname = models.CharField(max_length=30,verbose_name="author last name")
@@ -53,6 +74,8 @@ class Highlight(models.Model):
     user=models.ForeignKey(User, on_delete=models.CASCADE)
     timestamp=models.DateTimeField(auto_now_add=True)
     dateloaded=models.CharField(max_length=12, verbose_name="date")
+    sentemail=models.BooleanField(verbose_name="sent email")
+    
 
 class Files(models.Model):
     file=models.FileField(verbose_name="files")
@@ -62,11 +85,3 @@ class Files(models.Model):
     def __str__(self):
         return str(self.file)
     
-# class CustomUser(AbstractUser):
-#     email = models.EmailField(unique=True)
-
-#     USERNAME_FIELD = 'email'
-#     REQUIRED_FIELDS = ['username']  # Add any other required fields here
-
-#     def __str__(self):
-#         return self.email

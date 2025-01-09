@@ -66,98 +66,10 @@ LOGGING = {
     },
 }
 
-
-
-
-# LOGGING = {
-#     "version": 1,
-#     "disable_existing_loggers": False,
-#     "handlers": {
-#         "console": {
-#             "class": "logging.StreamHandler",
-#         },
-#     },
-#     "root": {
-#         "handlers": ["console"],
-#         "level": "WARNING",
-#     },
-# }
-
-# LOGGING = {
-#     "version": 1,
-#     "disable_existing_loggers": False,
-#     "formatters": {
-#         "verbose": {
-#             "format": "{asctime} {levelname} {module} {message}",
-#             "style": "{",
-#         },
-#     },
-#     "handlers": {
-#         "console": {
-#             "class": "logging.StreamHandler",
-#             "formatter": "verbose",
-#         },
-#     },
-#     "root": {
-#         "handlers": ["console"],
-#         "level": "WARNING",
-#     },
-#     "loggers": {
-#         "timwise": {
-#             "handlers": ["console"],
-#             "level": "WARNING",
-#             "propagate": False,
-#         },
-#         "django": {
-#             "handlers": ["console"],
-#             "level": "INFO",
-#             "propagate": False,
-#         },
-#     },
-# }
-
-
-# LOGGING = {
-#     "version": 1,
-#     "disable_existing_loggers": False,
-#     "formatters": {
-#         "debug": {
-#             "format": "%(asctime)s [%(levelname)s] (%(name)s:%(lineno)d): %(message)s",
-#             "datefmt": "%Y-%m-%d %H:%M:%S",
-#         },
-#     },
-#     "handlers": {
-#         "console": {
-#             "level": "DEBUG",
-#             "class": "logging.StreamHandler",
-#             "formatter": "debug",
-#         },
-#         "file": {
-#             "level": "DEBUG",
-#             "class": "logging.FileHandler",
-#             "filename": "/tmp/django-debug.log",
-#             "formatter": "debug",
-#         }
-#     },
-#     "loggers": {
-#         "": {  # Root logger
-#             "handlers": ["console", "file"],
-#             "level": "DEBUG",
-#         },
-#         "timwise": {
-#             "handlers": ["console", "file"],
-#             "level": "INFO",
-#             "propagate": False,
-#         },
-#         "django": {
-#             "handlers": ["console", "file"],
-#             "level": "INFO",
-#             "propagate": False,
-#         },
-#     },
-# }
-
-# Application definition
+# filepath: your_project/settings.py
+CRON_CLASSES = [
+    'timwise.cron.MyCronJob',
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -166,6 +78,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_cron',
     'debug_toolbar',
     'timwise',
 ]
@@ -293,4 +206,9 @@ LOGIN_REDIRECT_URL = 'home'
 # DEBUG_TOOLBAR_CONFIG = {
 #     'SHOW_TOOLBAR_CALLBACK': lambda request: True,
 # }
+
+# AUTH_USER_MODEL = 'timwise.CustomUser'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# LOGOUT_REDIRECT_URL = 'logout'
 

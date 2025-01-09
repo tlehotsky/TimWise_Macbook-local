@@ -1,105 +1,79 @@
-for my timwise django app, I want to create the following:
-1. modify the myhighlights.html file to include an additional column labeled 'action'.
-2. each row that loads in the myhighlights.html file will a link in the 'action' column that will take the user to a new page called edit_highlight.html
-3. when the user clicks on that link in the 'action' column, the user will be taken to the edit_highlight.html page where they can edit the highlight.
+my django app logout function doesn't work it doesn't find the logout.html page, below are my some of my app's code files including:  urls.py, views.py, and logout.html files,  the error the browser reports is: 
 
-please help me modify the myhighlights.html file to include the 'action' column and the link to the edit_highlight.html page and please help me create the edit_highlight.html page.
+This page isn’t working
+If the problem continues, contact the site owner.
+HTTP ERROR 405
 
-this is my myhighlights.html file:
+this is my urls.py file:
 
-<!-- timwise django app
-templates.myhighlights.html -->
+# timwise django app
+# timwise.urls.py
 
 
-{% extends 'base.html' %}
+from django.urls import path, include
+# TODO: test commenting out the next line
+from .views import UploadHighlights, FileUploadView, EditAuthorView, EditBookView, EditHighlightView, EditUserSettingsView, custom_logout
+from django.views.generic import TemplateView
+from django.http import HttpResponse
+import logging
+from django.conf import settings 
+from . import views  # new from AI, Import the views module from the current app
+from django.contrib.auth import views as auth_views
 
-{% block title %}My Highlights{% endblock %}
 
-{% block content %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Highlights</title>
-    <br>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 12px;  /* Adjust the font size for the entire table */
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            font-size: 12px;  /* Adjust the font size for table headers and data */
-        }
-        th {
-            background-color: #f4f4f4;
-            text-align: left;
-        }
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        tr:hover {
-            background-color: #f1f1f1;
-        }
-    </style>
-</head>
-<body>
-    <h1>My Highlights</h1>
-    <br>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Book</th>
-                <th>Chapter</th>
-                <th>Page</th>
-                <th>Line Number</th>
-                <th>Color</th>
-                <th>Text</th>
-                <th>Timestamp</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for highlight in highlights %}
-            <tr>
-                <td>{{ highlight.ID }}</td>
-                <td>{{ highlight.book }}</td>
-                <td>{{ highlight.chapter_number }}</td>
-                <td>{{ highlight.page_number }}</td>
-                <td>{{ highlight.html_line_number }}</td>
-                <td>{{ highlight.color }}</td>
-                <td>{{ highlight.text }}</td>
-                <td>{{ highlight.timestamp }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="8" style="text-align: center;">No highlights found</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-</html>
-{% endblock %}
+logger = logging.getLogger(__name__)
 
+def test_logging(request):
+    print("PRINT: Test view executed")
+    logger.debug("DEBUG: Test view executed")
+    logger.info("INFO: Test view executed")
+    logger.warning("WARNING: Test view executed")
+    logger.error("ERROR: Test view executed")
+    return HttpResponse("Test view executed - check your console")
+
+urlpatterns = [
+    path('', views.home, name='home'),
+    path('logout/', custom_logout, name='logout'),
+    path('test-logging/', test_logging, name='test-logging'),
+    path('upload/', FileUploadView.as_view(), name='upload'),
+    path('success/<str:filename>/<str:msg>/', TemplateView.as_view(template_name='success.html'), name='success'),
+    path('home/', views.home, name='home'),
+    path('edit-author/<int:id>/', EditAuthorView.as_view(), name='edit-author'),
+    path('edit-book/<int:id>/', EditBookView.as_view(), name='edit-book'),
+    path('mybooks/', views.mybooks, name='mybooks'),
+    path('myauthors/', views.myauthors, name='myauthors'),
+    path('why/', views.why, name='why'),
+    path('settings/', EditUserSettingsView.as_view(), name='settings'),
+    path('myhighlights/', views.myhighlights, name='myhighlights'),
+    # path('logout/', views.logout, name='logout'),
+    # path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('signup/', views.signup, name='signup'),
+    path('instructions/', views.instructions, name='instructions'),
+    path('accounts/', include('django.contrib.auth.urls')),
+    path('edit_highlight/<int:pk>/', EditHighlightView.as_view(), name='edit_highlight'),
+]
+
+# if settings.DEBUG:
+#     import debug_toolbar
+#     urlpatterns = [
+#         path('__debug__/', include(debug_toolbar.urls)),
+#     ] + urlpatterns
 
 this is my views.py file:
 
 # timwise.views.py
 # # cd /home/django/django_project
 # source bin/activate
+from django.shortcuts import get_object_or_404
 from django import forms
 from django.shortcuts import render, redirect
-from .models import Book, Author, Highlight, Files
+from .models import Book, Author, Highlight, Files, UserSettings
 from django.views.generic import ListView, CreateView
 from django.urls import reverse_lazy #from gemini
 from .forms import FileUploadForm #from gemini
 from django.contrib import messages #from gemini
 from bs4 import BeautifulSoup, SoupStrainer
-# import html5lib
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 import logging, os, re
 from timeout_decorator import timeout
@@ -161,9 +135,26 @@ class EditBookView(UpdateView):
         book_id = self.kwargs.get("id")
         return Book.objects.get(ID=book_id)
 
+class EditUserSettingsView(LoginRequiredMixin, UpdateView):
+    model = UserSettings
+    template_name = "settings.html"
+    fields = ["theme", "font_size", "font_family", "line_height", "margin", "emailfrequency", "repeatsendhightlights"]
+    success_url = reverse_lazy("settings")  # Redirect to the same page or elsewhere after saving
+
+    def get_object(self, queryset=None):
+        # Get or create the UserSettings object for the logged-in user
+        obj, created = UserSettings.objects.get_or_create(user=self.request.user)
+        return obj
+
+
+
 ########################### edit highlight classes ########################################
 
-
+class EditHighlightView(UpdateView):
+    model = Highlight
+    template_name = "edit_highlight.html"
+    fields = ["name", "html_line_number", "color", "page_number", "text"]  # Fields to edit
+    success_url = reverse_lazy("myhighlights")  # Redirect after successful edit
 
 
 ########################### edit highlight classes ########################################
@@ -472,7 +463,7 @@ def myhighlights(request):
 def settings(request):
     return render(request, 'settings.html')
 
-def logout(request):
+def custom_logout(request):
     auth_logout(request)
     return render(request, 'logout.html')
 
@@ -529,120 +520,13 @@ def mybooks(request):
 
     return render(request, 'mybooks.html', context)
 
-this is my models.py file:
+this is logout.html file:
 
-# timwise django app
-# timwise.models.py
-# 
-from django.db import models
-from django.core.validators import MaxValueValidator, MinValueValidator
-from django.contrib.auth.models import User
-from django.utils.timezone import now
+<!-- templates/logout.html -->
+{% extends "base.html" %}
 
+{% block content %}
 
-class Author(models.Model):  
-    ID = models.AutoField(primary_key=True, verbose_name="author ID")
-    lastname = models.CharField(max_length=30,verbose_name="author last name")
-    firstname = models.CharField(max_length=30, verbose_name="author first name")
-    fullname = models.CharField(max_length=60, unique=True, verbose_name="author full name")
-    dateloaded=models.CharField(max_length=12)
-    sessionkey = models.CharField(max_length=50, verbose_name="django session key")
-    timestamp=models.DateTimeField(auto_now_add=True)
-    user=models.ForeignKey(User, on_delete=models.CASCADE)
+ <p>Thank you for spending some time with TimWise</p>
 
-
-    def __str__(self):
-        return self.fullname
-
-class Book(models.Model): 
-    timestamp=models.DateTimeField(auto_now_add=True)
-    sessionkey = models.CharField(max_length=50, verbose_name="django session key")
-    ID = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=200)
-    author = models.ForeignKey('Author', on_delete=models.CASCADE, verbose_name="book author")
-    chaptercount = models.IntegerField(verbose_name="chapter count")
-    dateloaded=models.CharField(max_length=12)
-    user=models.ForeignKey(User, on_delete=models.CASCADE)
-    yearwritten = models.IntegerField(
-        validators=[MinValueValidator(1900), MaxValueValidator(9999)], verbose_name="year written"
-    )
-
-    class Meta:
-        unique_together = ['name', 'author']  # Add this to prevent duplicate books by same author
-
-    def __str__(self):
-        return f"{self.name} by {self.author}"
-
-
-class Highlight(models.Model):  
-    ID = models.AutoField(primary_key=True, verbose_name="highlight ID")
-    book = models.ForeignKey('Book', on_delete=models.CASCADE)
-    chapter_number = models.CharField(max_length=50)
-    html_line_number = models.IntegerField(verbose_name="highlight html line number")
-    color = models.CharField(max_length=30, verbose_name="highlight color")
-    page_number = models.CharField(max_length=50, verbose_name="highlight page number")
-    text = models.TextField(verbose_name="highlight text")
-    sessionkey = models.CharField(max_length=50, verbose_name="django session key")
-    user=models.ForeignKey(User, on_delete=models.CASCADE)
-    timestamp=models.DateTimeField(auto_now_add=True)
-    dateloaded=models.CharField(max_length=12, verbose_name="date")
-
-class Files(models.Model):
-    file=models.FileField(verbose_name="files")
-    uploaded_at = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return str(self.file)
-    
-    this is my urls.py file:
-
-# timwise django app
-# timwise.urls.py
-
-
-from django.urls import path, include
-# TODO: test commenting out the next line
-from .views import UploadHighlights, FileUploadView, EditAuthorView, EditBookView
-from django.views.generic import TemplateView
-from django.http import HttpResponse
-import logging
-from django.conf import settings 
-from . import views  # new from AI, Import the views module from the current app
-
-logger = logging.getLogger(__name__)
-
-def test_logging(request):
-    print("PRINT: Test view executed")
-    logger.debug("DEBUG: Test view executed")
-    logger.info("INFO: Test view executed")
-    logger.warning("WARNING: Test view executed")
-    logger.error("ERROR: Test view executed")
-    return HttpResponse("Test view executed - check your console")
-
-urlpatterns = [
-    path('', views.home, name='home'),
-    path('test-logging/', test_logging, name='test-logging'),
-    path('upload/', FileUploadView.as_view(), name='upload'),
-    path('success/<str:filename>/<str:msg>/', TemplateView.as_view(template_name='success.html'), name='success'),
-    path('home/', views.home, name='home'),
-    path('edit-author/<int:id>/', EditAuthorView.as_view(), name='edit-author'),
-    path('edit-book/<int:id>/', EditBookView.as_view(), name='edit-book'),
-    path('mybooks/', views.mybooks, name='mybooks'),
-    path('myauthors/', views.myauthors, name='myauthors'),
-    path('why/', views.why, name='why'),
-    path('settings/', views.settings, name='settings'),
-    path('myhighlights/', views.myhighlights, name='myhighlights'),
-    path('logout/', views.logout, name='logout'),
-    path('signup/', views.signup, name='signup'),
-    path('instructions/', views.instructions, name='instructions'),
-    path('accounts/', include('django.contrib.auth.urls')),
-]
-
-if settings.DEBUG:
-    import debug_toolbar
-    urlpatterns = [
-        path('__debug__/', include(debug_toolbar.urls)),
-    ] + urlpatterns
-
-
+{% endblock content %}

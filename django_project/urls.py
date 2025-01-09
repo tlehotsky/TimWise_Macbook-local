@@ -19,20 +19,24 @@ from debug_toolbar.toolbar import debug_toolbar_urls
 from . import views
 from django.conf import settings
 from django.shortcuts import redirect
+# from django.contrib.auth.views import LogoutView
+
 
 urlpatterns = [
     path('', lambda request: redirect('http://134.209.220.170/instructions/home/', permanent=True)),  # Redirect home page
     path('accounts/', include('django.contrib.auth.urls')),
+    # path('logout/', LogoutView.as_view(template_name='logout.html'), name='logout'),
+
     path('admin/', admin.site.urls),
     path("timwise/", include("timwise.urls")),
     path('', include('timwise.urls')),  # chat gpt new
 
 ] 
 
-if settings.DEBUG:
-    import debug_toolbar
-    urlpatterns += [
-        path('__debug__/', include(debug_toolbar.urls)),
-    ]
+# if settings.DEBUG:
+#     import debug_toolbar
+#     urlpatterns += [
+#         path('__debug__/', include(debug_toolbar.urls)),
+#     ]
 
 

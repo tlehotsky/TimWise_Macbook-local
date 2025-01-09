@@ -1,15 +1,16 @@
 # timwise.views.py
 # # cd /home/django/django_project
 # source bin/activate
+from django.shortcuts import get_object_or_404
 from django import forms
 from django.shortcuts import render, redirect
-from .models import Book, Author, Highlight, Files
+from .models import Book, Author, Highlight, Files, UserSettings
 from django.views.generic import ListView, CreateView
 from django.urls import reverse_lazy #from gemini
 from .forms import FileUploadForm #from gemini
 from django.contrib import messages #from gemini
 from bs4 import BeautifulSoup, SoupStrainer
-# import html5lib
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 import logging, os, re
 from timeout_decorator import timeout
@@ -19,6 +20,8 @@ import datetime as dt
 from django.contrib.auth import logout as auth_logout
 from django.shortcuts import redirect
 from django.views.generic.edit import UpdateView
+from django.views.decorators.http import require_http_methods
+
 
 
 
@@ -70,6 +73,36 @@ class EditBookView(UpdateView):
     def get_object(self, queryset=None):
         book_id = self.kwargs.get("id")
         return Book.objects.get(ID=book_id)
+
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
+from django.views.generic.edit import UpdateView
+from .models import UserSettings
+
+class EditUserSettingsView(LoginRequiredMixin, UpdateView):
+    model = UserSettings
+    template_name = "settings.html"
+    fields = ["theme", "font_size", "font_family", "line_height", "margin", "emailfrequency", "qtyperemail", "repeatsendhightlights"]
+    success_url = reverse_lazy("settings")  # Redirect to the same page or elsewhere after saving
+
+    def get_object(self, queryset=None):
+        # Get or create the UserSettings object for the logged-in user with default values
+        obj, created = UserSettings.objects.get_or_create(
+            user=self.request.user,
+            defaults={
+                "theme": "default",
+                "font_size": 8,
+                "font_family": "Arial",
+                "line_height": 1.5,
+                "margin": 10,
+                "emailfrequency": "daily",
+                "repeatsendhightlights": False,
+                "qtyperemail": 1,
+            }
+        )
+        return obj
+
+
 
 ########################### edit highlight classes ########################################
 
@@ -354,6 +387,10 @@ def home(request):
 def why(request):
     return render(request, 'why.html')
 
+def logmeout(request):
+    auth_logout(request)
+    return render(request, 'logmeout.html')
+
 def instructions(request):
     return render(request, 'instructions.html')
 
@@ -386,9 +423,11 @@ def myhighlights(request):
 def settings(request):
     return render(request, 'settings.html')
 
-def logout(request):
-    auth_logout(request)
-    return render(request, 'logout.html')
+# @require_http_methods(["GET", "POST"])  # Only allow GET and POST methods
+# def custom_logout(request):
+#     auth_logout(request)
+#     return redirect('home')
+
 
 def signup(request):
     return render(request, 'signup.html')
