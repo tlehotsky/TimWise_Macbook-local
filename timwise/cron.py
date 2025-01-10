@@ -1,4 +1,11 @@
 # filepath: timwise/cron.py
+# python3 /home/django/django_project/manage.py runcrons
+
+
+#### crontab
+# */10 * * * * /usr/bin/python3 /home/django/django_project/manage.py runcrons >> /home/django/cron.log 2>&1
+
+
 from django_cron import CronJobBase, Schedule
 import os, sys, random
 import psycopg2
@@ -14,6 +21,30 @@ class MyCronJob(CronJobBase):
 
     def do(self):
         # Your code here
+        def send_email(subject, body, to):
+            gmail_user = "timwise.app@gmail.com"
+            gmail_password = "bmhg xbzq lqve mpxt"  # Replace with the App Password from Google
+
+            sent_from = gmail_user
+            # to = ["tim.lehotsky@wsp.com"]
+
+            msg = MIMEMultipart('alternative')
+            msg['From'] = sent_from
+            msg['To'] = ", ".join(to)
+            msg['Subject'] = subject
+            msg.attach(MIMEText(body, 'html'))
+
+            try:
+                server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
+                # server.set_debuglevel(1)  # Enable debug output
+                server.login(gmail_user, gmail_password)
+                server.sendmail(sent_from, to, msg.as_string())
+                server.close()
+                print("Email sent!")
+            except Exception as e:
+                print(f"Something went wrong: {e}")
+
+
 
 
 
@@ -132,28 +163,5 @@ class MyCronJob(CronJobBase):
 
 
 
-
-    def send_email(subject, body, to):
-        gmail_user = "timwise.app@gmail.com"
-        gmail_password = "bmhg xbzq lqve mpxt"  # Replace with the App Password from Google
-
-        sent_from = gmail_user
-        # to = ["tim.lehotsky@wsp.com"]
-
-        msg = MIMEMultipart('alternative')
-        msg['From'] = sent_from
-        msg['To'] = ", ".join(to)
-        msg['Subject'] = subject
-        msg.attach(MIMEText(body, 'html'))
-
-        try:
-            server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
-            # server.set_debuglevel(1)  # Enable debug output
-            server.login(gmail_user, gmail_password)
-            server.sendmail(sent_from, to, msg.as_string())
-            server.close()
-            print("Email sent!")
-        except Exception as e:
-            print(f"Something went wrong: {e}")
 
 

@@ -21,9 +21,18 @@ from django.contrib.auth import logout as auth_logout
 from django.shortcuts import redirect
 from django.views.generic.edit import UpdateView
 from django.views.decorators.http import require_http_methods
+from django.views.generic.edit import UpdateView
 
 
+class EditProfileView(LoginRequiredMixin, UpdateView):
+    model = User
+    template_name = "edit_profile.html"
+    fields = ["first_name", "last_name", "email"]
+    success_url = reverse_lazy("edit_profile")  # Redirect to the same page or elsewhere after saving
 
+    def get_object(self, queryset=None):
+        # Return the current logged-in user
+        return self.request.user
 
 class Author_list(ListView):
     model = Highlight
@@ -74,10 +83,6 @@ class EditBookView(UpdateView):
         book_id = self.kwargs.get("id")
         return Book.objects.get(ID=book_id)
 
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
-from django.views.generic.edit import UpdateView
-from .models import UserSettings
 
 class EditUserSettingsView(LoginRequiredMixin, UpdateView):
     model = UserSettings

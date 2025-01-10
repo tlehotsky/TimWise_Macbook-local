@@ -45,7 +45,7 @@
 
 
 from django.urls import path, include
-from .views import UploadHighlights, FileUploadView, EditAuthorView, EditBookView, EditHighlightView, EditUserSettingsView #, custom_logout
+from .views import UploadHighlights, FileUploadView, EditAuthorView, EditBookView, EditHighlightView, EditUserSettingsView, EditProfileView #, custom_logout
 from django.views.generic import TemplateView
 from django.conf import settings 
 from . import views
@@ -54,8 +54,7 @@ from django.contrib.auth.views import LogoutView
 urlpatterns = [
     path('', views.home, name='home'),
     path('logmeout/', views.logmeout, name='logmeout'),
-    # path('logout/', custom_logout, name='logout'),
-    path('accounts/', include('django.contrib.auth.urls')),    # Add your other URL patterns here
+    path('accounts/', include('django.contrib.auth.urls')),  # Keep other auth URLs
     path('upload/', FileUploadView.as_view(), name='upload'),
     path('success/<str:filename>/<str:msg>/', TemplateView.as_view(template_name='success.html'), name='success'),
     path('home/', views.home, name='home'),
@@ -69,6 +68,7 @@ urlpatterns = [
     path('signup/', views.signup, name='signup'),
     path('instructions/', views.instructions, name='instructions'),
     path('edit_highlight/<int:pk>/', EditHighlightView.as_view(), name='edit_highlight'),
+    path('edit_profile/', EditProfileView.as_view(), name='edit_profile'),  # Add the new URL pattern
 ]
 
 

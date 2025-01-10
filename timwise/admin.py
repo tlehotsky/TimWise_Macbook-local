@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Book, Author, Highlight, Files
+from .models import Book, Author, Highlight, Files, UserSettings
 
 
 class AuthorAdmin(admin.ModelAdmin):
@@ -14,7 +14,11 @@ class HighlightAdmin(admin.ModelAdmin):
 class FilesAdmin(admin.ModelAdmin):
     list_display = ('file',)  
 
+class UserSettingsAdmin(admin.ModelAdmin):
+    list_display = ('user', 'theme', 'font_size', 'font_family', 'line_height', 'margin', 'emailfrequency', 'qtyperemail', 'repeatsendhightlights')
+    search_fields = ('user__username', 'theme', 'font_family', 'emailfrequency')
 
+admin.site.register(UserSettings, UserSettingsAdmin)
 admin.site.register(Author, AuthorAdmin)
 admin.site.register(Book, BookAdmin)
 admin.site.register(Highlight, HighlightAdmin)
