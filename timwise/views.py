@@ -1,5 +1,6 @@
 # timwise.views.py
-# # cd /home/django/django_project
+
+
 # source bin/activate
 from django.shortcuts import get_object_or_404
 from django import forms
@@ -294,7 +295,7 @@ class FileUploadView(LoginRequiredMixin, CreateView):
                         msg=msg+".......CHECKING IF HIGHLIGHT NOTE EXISTS....."
                     try:
 
-                        highlight_obj = Highlight.objects.filter(text=text).first()
+                        highlight_obj = Highlight.objects.filter(text=text, user=user_obj).first()
                         if z==1 and highlight_obj:
                             msg=msg+".......HIGHLIGHT CHECKED, HIGHLIGHT EXISTS....."
 
@@ -309,6 +310,7 @@ class FileUploadView(LoginRequiredMixin, CreateView):
 
                         highlight_obj, created = Highlight.objects.get_or_create(
                             text=text,
+                            user=user_obj,
                             defaults={
                                 'chapter_number': z,
                                 'html_line_number': note.sourceline,
@@ -316,10 +318,26 @@ class FileUploadView(LoginRequiredMixin, CreateView):
                                 'page_number': page_number,
                                 'book_id':book_id,
                                 'sessionkey':session_id,
-                                'user':user_obj,
                                 'dateloaded':datewhenuploaded
                             }
-                        )                           
+                        )
+
+                        # highlight_obj = Highlight.objects.create(
+                        #         text=text,
+                        #         user=user_obj,
+                        #         chapter_number=z,
+                        #         html_line_number=note.sourceline,
+                        #         color=highlight_color,
+                        #         page_number=page_number,
+                        #         book_id=book_id,
+                        #         sessionkey=session_id,
+                        #         dateloaded=datewhenuploaded
+                        #         )
+
+
+
+
+
 
                         if not highlight_obj: #highlight does not exist
                             

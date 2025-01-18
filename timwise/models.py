@@ -30,14 +30,19 @@ class UserSettings(models.Model):
 
 class Author(models.Model):  
     ID = models.AutoField(primary_key=True, verbose_name="author ID")
-    lastname = models.CharField(max_length=30,verbose_name="author last name")
+    lastname = models.CharField(max_length=30, verbose_name="author last name")
     firstname = models.CharField(max_length=30, verbose_name="author first name")
-    fullname = models.CharField(max_length=60, unique=True, verbose_name="author full name")
-    dateloaded=models.CharField(max_length=12)
+    fullname = models.CharField(max_length=60, verbose_name="author full name")
+    dateloaded = models.CharField(max_length=12)
     sessionkey = models.CharField(max_length=50, verbose_name="django session key")
-    timestamp=models.DateTimeField(auto_now_add=True)
-    user=models.ForeignKey(User, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    class Meta:
+        # Add a unique constraint on 'fullname' and 'user'
+        constraints = [
+            models.UniqueConstraint(fields=['fullname', 'user'], name='unique_author_per_user')
+        ]
 
     def __str__(self):
         return self.fullname
