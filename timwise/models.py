@@ -79,7 +79,7 @@ class Highlight(models.Model):
     user=models.ForeignKey(User, on_delete=models.CASCADE)
     timestamp=models.DateTimeField(auto_now_add=True)
     dateloaded=models.CharField(max_length=12, verbose_name="date")
-    sentemail=models.BooleanField(verbose_name="sent email")
+    sentemail=models.BooleanField(verbose_name="sent email",null=True, default=False)
     
 
 class Files(models.Model):

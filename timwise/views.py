@@ -305,6 +305,8 @@ class FileUploadView(LoginRequiredMixin, CreateView):
                     except Exception as e:
                         if z==1:
                             msg=msg+f"Failed to READ highlight, the resulting error message is: {e}"  
+                    
+                    
                     try:
 
 
@@ -322,17 +324,17 @@ class FileUploadView(LoginRequiredMixin, CreateView):
                             }
                         )
 
-                        # highlight_obj = Highlight.objects.create(
-                        #         text=text,
-                        #         user=user_obj,
-                        #         chapter_number=z,
-                        #         html_line_number=note.sourceline,
-                        #         color=highlight_color,
-                        #         page_number=page_number,
-                        #         book_id=book_id,
-                        #         sessionkey=session_id,
-                        #         dateloaded=datewhenuploaded
-                        #         )
+                    # highlight_obj = Highlight.objects.create(
+                    #         text=text,
+                    #         user=user_obj,
+                    #         chapter_number=z,
+                    #         html_line_number=note.sourceline,
+                    #         color=highlight_color,
+                    #         page_number=page_number,
+                    #         book_id=book_id,
+                    #         sessionkey=session_id,
+                    #         dateloaded=datewhenuploaded
+                    #         )
 
 
 
@@ -386,6 +388,7 @@ class FileUploadView(LoginRequiredMixin, CreateView):
                             'highlight_upload_count':highlight_upload_count,
                             'uploadstatmessage':uploadstatmessage,
                             'msg2':msg2,
+                            'logreport':msg,
                         }
 
                 return render(self.request, 'upload_success.html', context)
